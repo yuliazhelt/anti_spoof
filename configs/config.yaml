@@ -1,0 +1,26 @@
+dataset: 
+  train:
+    dataset_path: /home/ubuntu/as_project/data
+    part: train
+  val:
+    dataset_path: /home/ubuntu/as_project/data
+    part: dev
+  test:
+    dataset_path: /home/ubuntu/as_project/data
+    part: eval
+
+train:
+  batch_size: 32
+  lr: 1.0E-4
+  weight_decay: 1.0E-4
+  num_epochs: 100
+  save_path: /home/ubuntu/as_project/saved
+  ce_weights: [1.0, 9.0]
+
+model:
+    filters: [128, 20, 128]
+    sinc_filter_len: 1024
+    in_channels: 1
+    gru_hidden_size: 1024
+    gru_num_layers: 3
+    res_blocks_num: [2, 4]

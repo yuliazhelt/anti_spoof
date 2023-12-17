@@ -6,8 +6,9 @@ import wandb
 
 from utils import eer_metric
 
+
 @torch.no_grad()
-def val_epoch(data_loader, model, criterion, device):
+def val_epoch(data_loader, model, criterion, device, part='eval'):
     running_loss = 0
     num_total = 0.0
     model.eval()
@@ -20,7 +21,7 @@ def val_epoch(data_loader, model, criterion, device):
         audio = audio.to(device)
         label = label.view(-1).type(torch.int64).to(device)
   
-        pred = model(audio, is_test=True)
+        pred = model(audio)
 
         model_scores.append(pred)
         labels.append(label)
@@ -33,6 +34,10 @@ def val_epoch(data_loader, model, criterion, device):
     running_loss /= num_total
 
     eer = eer_metric(torch.cat(model_scores)[:, 0], torch.cat(labels))
+
+    wandb.log({f"{part}_eer": eer})
+    wandb.log({f"{part}_loss": running_loss})
+
     
     return running_loss, eer
 
@@ -77,18 +82,20 @@ def train(
         num_epochs=100
     ):
     for epoch in range(num_epochs):
-        running_loss = train_epoch(train_loader, model, optimizer, criterion, device)
+        # running_loss = train_epoch(train_loader, model, optimizer, criterion, device)
 
-        print("train loss: ", running_loss)
-        torch.save(
-            {
-                'model': model.state_dict(), 
-                'optimizer': optimizer.state_dict()
-            }, 
-            f"{save_path}/epoch={epoch}.pth"
-        )
-        dev_loss, dev_eer = val_epoch(dev_loader, model, criterion, device)
-        eval_loss, eval_eer = val_epoch(eval_loader, model, criterion, device)
+        # print("train loss: ", running_loss)
+        # torch.save(
+        #     {
+        #         'model': model.state_dict(), 
+        #         'optimizer': optimizer.state_dict()
+        #     }, 
+        #     f"{save_path}/epoch={epoch}.pth"
+        # )
+        if dev_loader is not None:
+            dev_loss, dev_eer = val_epoch(dev_loader, model, criterion, device, part='dev')
+        if eval_loader is not None:
+            eval_loss, eval_eer = val_epoch(eval_loader, model, criterion, device, part='eval')
 
         print("dev", f"loss={dev_loss}", f"eer={dev_eer}")
         print("eval", f"loss={eval_loss}", f"eer={eval_eer}")

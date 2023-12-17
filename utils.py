@@ -39,5 +39,5 @@ def compute_eer(bonafide_scores, other_scores):
     eer = np.mean((frr[min_index], far[min_index]))
     return eer, thresholds[min_index]
 
-def calculate_eer(model_scores, labels):
+def eer_metric(model_scores, labels):
     return compute_eer(model_scores[labels == 1], model_scores[labels == 0])

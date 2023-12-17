@@ -79,6 +79,7 @@ def train(
         save_path='/saved',
         num_epochs=100
     ):
+
     for epoch in range(num_epochs):
         running_loss = train_epoch(train_loader, model, optimizer, criterion, device)
 

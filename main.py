@@ -45,10 +45,16 @@ if __name__ == "__main__":
     print(device)
     print(model)
 
-    
     optimizer = torch.optim.Adam(model.parameters(), lr=config['train']['lr'], weight_decay=config['train']['weight_decay'])
     class_weights = torch.FloatTensor(config['train']['ce_weights']).to(device)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+    load_path = config['train']['load_path']
+    if load_path != 'none':
+        model_dict = torch.load(load_path)
+        model.load_state_dict(model_dict['model'])
+        optimizer.load_state_dict(model_dict['optimizer'])
+        print("model loaded")
 
     current_date = datetime.now()
     current_date_str = current_date.strftime("%d.%m-%H:%M:%S")
@@ -65,6 +71,6 @@ if __name__ == "__main__":
         dev_loader=dev_loader,
         num_epochs=config['train']['num_epochs'],
         device=device,
-        save_path=f"{config['train']['save_path']}/run_{current_date_str}"
+        save_path=f"{config['train']['save_path']}/run_{current_date_str}",
     )
     wandb.finish()

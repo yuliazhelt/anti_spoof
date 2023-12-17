@@ -260,7 +260,9 @@ class RawNet2(nn.Module):
     
     def forward(self, x):
         x = self.sinc_filter(x)
-        x = self.after_sinc_filter(torch.abs(x))
+        # x = self.after_sinc_filter(torch.abs(x))
+        x = self.after_sinc_filter(x)
+
 
         x = self.first_res_block_stack(x)
         x = self.second_res_block_stack(x)

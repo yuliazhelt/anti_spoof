@@ -7,12 +7,10 @@ dataset:
     dataset_path: /home/ubuntu/as_project/data
     part: dev
     max_len: 64_000
-    limit: 16000
   eval:
     dataset_path: /home/ubuntu/as_project/data
     part: eval
     max_len: 64_000
-    limit: 16000
 
 train:
   batch_size: 32
@@ -20,6 +18,7 @@ train:
   weight_decay: 1.0E-4
   num_epochs: 100
   save_path: /home/ubuntu/as_project/saved
+  load_path: /home/ubuntu/as_project/saved/run_17.12-17:39:07/epoch=14.pth
   ce_weights: [1.0, 9.0]
 
 dev:
@@ -29,7 +28,7 @@ eval:
   batch_size: 64
 
 model:
-    filters: [128, 20, 128]
+    filters: [20, 20, 128]
     sinc_filter_len: 1024
     in_channels: 1
     gru_hidden_size: 1024

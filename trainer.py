@@ -3,7 +3,7 @@ from torch import nn
 from tqdm import tqdm
 import os
 import wandb
-
+import numpy as np
 from utils import eer_metric
 
 
@@ -33,10 +33,8 @@ def val_epoch(data_loader, model, criterion, device, part='eval'):
        
     running_loss /= num_total
 
-    eer = eer_metric(torch.cat(model_scores)[:, 0], torch.cat(labels))
-
-    wandb.log({f"{part}_eer": eer})
-    wandb.log({f"{part}_loss": running_loss})
+    eer = eer_metric(torch.cat(model_scores)[:, 1].detach().cpu().numpy(), torch.cat(labels).detach().cpu().numpy())
+    wandb.log({f"{part}_eer": eer[0].item(), f"{part}_loss": running_loss})
 
     
     return running_loss, eer
@@ -82,20 +80,20 @@ def train(
         num_epochs=100
     ):
     for epoch in range(num_epochs):
-        # running_loss = train_epoch(train_loader, model, optimizer, criterion, device)
+        running_loss = train_epoch(train_loader, model, optimizer, criterion, device)
 
-        # print("train loss: ", running_loss)
-        # torch.save(
-        #     {
-        #         'model': model.state_dict(), 
-        #         'optimizer': optimizer.state_dict()
-        #     }, 
-        #     f"{save_path}/epoch={epoch}.pth"
-        # )
+        print("train loss: ", running_loss)
+        torch.save(
+            {
+                'model': model.state_dict(), 
+                'optimizer': optimizer.state_dict()
+            }, 
+            f"{save_path}/epoch={epoch}.pth"
+        )
         if dev_loader is not None:
             dev_loss, dev_eer = val_epoch(dev_loader, model, criterion, device, part='dev')
+            print("dev", f"loss={dev_loss}", f"eer={dev_eer}")
+
         if eval_loader is not None:
             eval_loss, eval_eer = val_epoch(eval_loader, model, criterion, device, part='eval')
-
-        print("dev", f"loss={dev_loss}", f"eer={dev_eer}")
-        print("eval", f"loss={eval_loss}", f"eer={eval_eer}")
+            print("eval", f"loss={eval_loss}", f"eer={eval_eer}")

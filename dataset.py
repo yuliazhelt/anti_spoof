@@ -20,7 +20,7 @@ def pad_with_copy(audio, max_len):
 
 
 class CustomDataset(Dataset):
-    def __init__(self, dataset_path = '.', part='train', max_len=64_000):
+    def __init__(self, dataset_path = '.', part='train', max_len=64_000, limit=None):
         super().__init__()
         self.part = part
         if part == 'train':
@@ -32,6 +32,9 @@ class CustomDataset(Dataset):
         LA_DIR = f'{dataset_path}/LA/LA/ASVspoof2019_LA_{part}/flac/'
         
         dataset_df = pd.read_csv(LA_PROTOCOL, delimiter=' ',header=None).sample(frac=1,random_state=13).reset_index()
+        
+        if limit is not None:
+            dataset_df = dataset_df[:limit]
     
         self.audio_paths = np.array([LA_DIR+path+'.flac' for path in dataset_df[1]])
 

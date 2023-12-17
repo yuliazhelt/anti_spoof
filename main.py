@@ -30,12 +30,15 @@ if __name__ == "__main__":
 
     # data
     train_set = CustomDataset(**config['dataset']['train'])
+    dev_set = CustomDataset(**config['dataset']['dev'])
     eval_set = CustomDataset(**config['dataset']['eval'])
     train_loader = DataLoader(train_set, collate_fn=collate_fn, batch_size=config['train']['batch_size'], shuffle=True, num_workers=4)
+    dev_loader = DataLoader(dev_set, collate_fn=collate_fn, batch_size=config['dev']['batch_size'], shuffle=False, num_workers=4)
     eval_loader = DataLoader(eval_set, collate_fn=collate_fn, batch_size=config['eval']['batch_size'], shuffle=False, num_workers=4)
     
-    print("len eval set", len(eval_set))
     print("len train set", len(train_set))
+    print("len dev set", len(dev_set))
+    print("len eval set", len(eval_set))
 
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     model = RawNet2(args=config['model']).to(device)
@@ -59,6 +62,7 @@ if __name__ == "__main__":
         optimizer=optimizer,
         criterion=criterion,
         eval_loader=eval_loader,
+        dev_loader=dev_loader,
         num_epochs=config['train']['num_epochs'],
         device=device,
         save_path=f"{config['train']['save_path']}/run_{current_date_str}"

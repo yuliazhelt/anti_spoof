@@ -17,7 +17,7 @@ python load_model.py
 ```
 
 ## Reproduction
-Train for ? epochs 
+Train for 25 epochs 
 ```
 python main.py
 ```

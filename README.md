@@ -21,3 +21,9 @@ Train for 25 epochs
 ```
 python main.py
 ```
+
+## Probabilities for spoof class
+Probabilities for spoof class on custom test set
+```
+python test.py
+```

@@ -20,7 +20,7 @@ train:
   weight_decay: 1.0E-4
   num_epochs: 100
   save_path: /home/ubuntu/as_project/saved
-  load_path: /home/ubuntu/as_project/best_model.pth
+  load_path: /home/ubuntu/as_project/model_best.pth
   ce_weights: [1.0, 9.0]
 
 dev:
